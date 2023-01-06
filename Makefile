@@ -48,7 +48,7 @@ clean_protos:
 	rm ${PROTO_DIR}/*_pb2.py
 
 locust_run:
-	source ${VENV_DIR}/bin/activate && locust -f ${SOURCE_DIR}/main.py --config ${SOURCE_DIR}/locust.docker.conf
+	source ${VENV_DIR}/bin/activate && locust -f ${SOURCE_DIR}/main.py --config ${SOURCE_DIR}/locust.conf
 
 start-docker:
 	sudo chmod +x ${SOURCE_DIR}/entrypoint.sh && \
