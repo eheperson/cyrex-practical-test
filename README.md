@@ -41,7 +41,6 @@ Python Developer Assesment for the Cyrex
 
 >if you have makefile, just run those commands in root directory of the project:
 >```
->    # if you have makefile just run
 >    $ make start-docker
 >```
 >
