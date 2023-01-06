@@ -71,19 +71,19 @@ class FetchVacancies(GrpcUser):
     auth_service_stub_class=AuthServiceClient
     wait_time = constant(45)
     weight=1
-    @task
-    def eeee(self):
-        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
     # @task
-    # def fetch_vacancies(self):
-    #     getVacanciesMessage = Messages.getVacancies(page=100)
-    #     res = self.client["vacancyClient"].getVacancies(getVacanciesMessage)
-    #     logging.info("Vacancy is created zzzzzzzzzwith { %s }", res.vacancy)
-    #     self.interrupt(reschedule=False)
+    # def eeee(self):
+    #     print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    #     print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    #     print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    #     print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    #     print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    @task
+    def fetch_vacancies(self):
+        getVacanciesMessage = Messages.getVacancies(page=100)
+        res = self.client["vacancyClient"].getVacancies(getVacanciesMessage)
+        logging.info("Vacancy is created zzzzzzzzzwith { %s }", res.vacancy)
+        self.interrupt(reschedule=False)
 
 
 class LoginWithUniqueUsersTest(GrpcUser):
