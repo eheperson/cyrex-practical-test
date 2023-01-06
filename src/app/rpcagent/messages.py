@@ -1,19 +1,19 @@
-import proto.rpc_signin_user_pb2 as rpc_signin_user
 import proto.rpc_create_vacancy_pb2 as rpc_create_vacancy
+import proto.rpc_signin_user_pb2 as rpc_signin_user
 import proto.rpc_update_vacancy_pb2 as rpc_update_vacancy
 import proto.vacancy_service_pb2 as vacancy_service
 
 
 class Messages:
     @classmethod
-    def signInUser(cls, email, password):
+    def sign_in_user(cls, email:str, password:str):
         return rpc_signin_user.SignInUserInput(
             email=email,
             password=password
         )
 
     @classmethod
-    def createVacancy(cls, country, description, division, title):
+    def create_vacancy(cls, country:str, description:str, division:int, title:str):
         return rpc_create_vacancy.CreateVacancyRequest(
             Country=country,
             Description=description,
@@ -22,24 +22,22 @@ class Messages:
         )
     
     @classmethod
-    def getVacancy(cls, id):
+    def get_vacancy(cls, id:str):
         return vacancy_service.VacancyRequest(
             Id=id
         )
     
     @classmethod
-    def getVacancies(cls, page:int=None, limit:int=None):
+    def get_vacancies(cls, page:int=None, limit:int=None):
         message = vacancy_service.GetVacanciesRequest()
-
-        if limit != None:
-            message.limit = limit
         if page != None:
             message.page = page
-
+        if limit != None:
+            message.limit = limit
         return message
 
     @classmethod
-    def updateVacancy(cls, id:str=None, country:str=None, description:str=None, division:int=None, title:str=None, views:int=None):
+    def update_vacancy(cls, id:str=None, country:str=None, description:str=None, division:int=None, title:str=None, views:int=None):
         message = rpc_update_vacancy.UpdateVacancyRequest()
 
         if id==None:
@@ -69,7 +67,7 @@ class Messages:
         return message
 
     @classmethod
-    def deleteVacancy(cls, id):
+    def delete_vacancy(cls, id:str):
         return vacancy_service.VacancyRequest(
             Id=id
         )

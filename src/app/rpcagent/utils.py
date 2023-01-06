@@ -1,7 +1,8 @@
+import os
 import random
 import string
+
 from dotenv import load_dotenv
-import os
 
 class RandomText:
     @classmethod
@@ -34,10 +35,10 @@ class RandomText:
         return result
 
 counter = 1
-def getUser():
-    rootDir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    dotenvPath = os.path.join(rootDir, ".env")
-    load_dotenv(dotenvPath)
+def get_user():
+    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+    dotenv_path = os.path.join(root_dir, ".env")
+    load_dotenv(dotenv_path)
     global counter
     USER_CREDENTIALS = [
         (os.getenv("USER_1_EMAIL"), os.getenv("USER_1_PASSWORD")),
