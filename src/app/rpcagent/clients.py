@@ -15,9 +15,6 @@ class AuthServiceClient(BaseClient):
         self.stub = auth_service_grpc.AuthServiceStub(self.channel)
 
     def sign_in_user(self, credentials):
-        """
-        Client function to call the rpc
-        """
         return self.stub.SignInUser(credentials)
 
     def sign_out_user(self):
@@ -35,31 +32,16 @@ class VacancyServiceClient(BaseClient):
         self.stub = vacancy_service_grpc.VacancyServiceStub(self.channel)
 
     def create_vacancy(self, message):
-        """
-        Client function to call the rpc
-        """
         return self.stub.CreateVacancy(message)
 
     def get_vacancy(self, message):
-        """
-        Client function to call the rpc
-        """
         return self.stub.GetVacancy(message)
 
     def get_vacancies(self, message):
-        """
-        Client function to call the rpc
-        """
         return self.stub.GetVacancies(message)
 
     def update_vacancy(self, message):
-        """
-        Client function to call the rpc
-        """
         return self.stub.UpdateVacancy(message)
 
     def delete_vacancy(self, message):
-        """
-        Client function to call the rpc
-        """
         return self.stub.DeleteVacancy(message)

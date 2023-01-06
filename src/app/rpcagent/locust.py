@@ -1,10 +1,11 @@
-import time
-from typing import Any, Callable
 import grpc
 import grpc.experimental.gevent as grpc_gevent
+import time
+
 from grpc_interceptor import ClientInterceptor
 from locust import HttpUser, User
 from locust.exception import LocustError
+from typing import Any, Callable
 
 # patch grpc so that it uses gevent instead of asyncio
 grpc_gevent.init_gevent()
@@ -68,7 +69,6 @@ class GrpcUser(HttpUser):
         self._channel_closed = False
         interceptor = LocustInterceptor(environment=environment)
         self._channel = grpc.intercept_channel(self._channel, interceptor)
-        # self.stub = self.stub_class(self._channel)
         self.client = {
             "authClient":self.auth_service_stub_class(self._channel),
             "vacancyClient":self.vacancy_service_stub_class(self._channel),

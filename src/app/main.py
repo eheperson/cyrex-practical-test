@@ -1,22 +1,24 @@
-from locust import task, SequentialTaskSet, constant
 import logging
+import time
+
+from locust import task, SequentialTaskSet, constant
 from rpcagent.clients import AuthServiceClient, VacancyServiceClient
+from rpcagent.locust import GrpcUser
 from rpcagent.messages import Messages
 from rpcagent.utils import RandomText, get_user
-from rpcagent.locust import GrpcUser
-import time
+
 vacancy_id = None
+
 class LoginWithUsers(SequentialTaskSet):
     wait_time = constant(30)
     email = "NOT_FOUND"
     password = "NOT_FOUND"
     def on_start(self):
-            # if len(USER_CREDENTIALS) > 0:
-            self.email, self.password = get_user()
-            
-            credentials = Messages.sign_in_user(email=self.email, password=self.password)
-            self.client["authClient"].sign_in_user(credentials=credentials)
-            logging.info('Login with %s email and %s password', self.email, self.password)
+        self.email, self.password = get_user()
+        
+        credentials = Messages.sign_in_user(email=self.email, password=self.password)
+        self.client["authClient"].sign_in_user(credentials=credentials)
+        logging.info('Login with %s email and %s password', self.email, self.password)
 
     @task
     class VacancyLoad(SequentialTaskSet):
@@ -32,7 +34,6 @@ class LoginWithUsers(SequentialTaskSet):
             res = self.client["vacancyClient"].create_vacancy(create_vacancy_message)
             vacancy_id = res.vacancy.Id
             logging.info("Vacancy is created with { %s }", res.vacancy)
-            # self.interrupt(reschedule=False)
 
         @task
         def update_vacancy(self):
@@ -40,7 +41,6 @@ class LoginWithUsers(SequentialTaskSet):
             update_vacancy_message = Messages.update_vacancy(id=vacancy_id, title=RandomText.lowercase(8))
             res = self.client["vacancyClient"].update_vacancy(update_vacancy_message)
             logging.info("Vacancy is updated with { %s }", res.vacancy)
-            # self.interrupt(reschedule=False)
 
         @task
         def fetch_vacancy(self):
@@ -48,7 +48,6 @@ class LoginWithUsers(SequentialTaskSet):
             get_vacancy_message = Messages.get_vacancy(id=vacancy_id)
             res = self.client["vacancyClient"].get_vacancy(get_vacancy_message)
             logging.info("Vacancy is fetched { %s }", res.vacancy)
-            # self.interrupt(reschedule=False)
 
         @task
         def delete_vacancy(self):
@@ -63,18 +62,15 @@ class FetchVacancies(GrpcUser):
     host = "vacancies.cyrextech.net:7823"
     vacancy_service_stub_class=VacancyServiceClient 
     auth_service_stub_class=AuthServiceClient
-    wait_time = constant(45)
+    wait_time = constant(44)
     weight=1
     @task
     def fetch_vacancies(self):
         if not self._channel_closed:
-            get_vacancies_message = Messages.get_vacancies()
+            get_vacancies_message = Messages.get_vacancies(limit=100)
             res = self.client["vacancyClient"].get_vacancies(get_vacancies_message)
             logging.info("vacancies are fetched : {%s} ", str(res))
-            # logging.info(res)
-            # logging.info(res)
         time.sleep(1)
-        # self.interrupt(reschedule=False)
 
 
 class LoginWithUniqueUsersTest(GrpcUser):
