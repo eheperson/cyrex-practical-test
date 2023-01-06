@@ -50,6 +50,7 @@ Python Developer Assesment for the Cyrex
 ```
 	$ brew install protobuf
 	$ brew tap ktr0731/evans
+    $ brew install evans
 	$ python -m venv venv
 	$ source venv/bin/activate
 	$ pip install --upgrade pip
