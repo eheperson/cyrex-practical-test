@@ -12,7 +12,7 @@ prepare:
 	python -m venv venv && \
 	source venv/bin/activate && \
 	pip install --upgrade pip && \
-	pip install -r requirements.txt && \
+	pip install -r ${SOURCE_DIR}/requirements.txt && \
 	deactivate \
 
 evans-help:
@@ -35,23 +35,21 @@ evans-help:
 	@echo "call rpc --------------------------> call <RpcName>"
 
 
-evans-connect-cli:
+evans-connect:
 	evans --host ${HOST} --port ${PORT} --path ${PROTO_DIR} --proto ${PROTO_FILE_NAMES}
 	
-evans-connect-repl:
-	evans --host ${HOST} --port ${PORT} --path ${PROTO_DIR} --proto ${PROTO_FILE_NAMES} repl
-
 generate_protos:
 	protoc -I${PROTO_DIR} --python_out=${PROTO_DIR}  ${PROTO_DIR}/*.proto
 
 generate_protos_python:
 	source ${VENV_DIR}/bin/activate && python -m grpc_tools.protoc --proto_path=${PROTO_DIR} --python_out=${PROTO_DIR} --grpc_python_out=${PROTO_DIR} ${PROTO_DIR}/*.proto && deactivate
 
-run:
-	source ${VENV_DIR}/bin/activate && python ${SOURCE_DIR}/main.py && deactivate
-
-locust_test:
-	source ${VENV_DIR}/bin/activate && locust -f ${SOURCE_DIR}/main.py
-
 clean_protos:
 	rm ${PROTO_DIR}/*_pb2.py
+
+locust_run:
+	source ${VENV_DIR}/bin/activate && locust -f ${SOURCE_DIR}/main.py --config ${SOURCE_DIR}/locust.docker.conf
+
+start-docker:
+	sudo chmod +x ${SOURCE_DIR}/entrypoint.sh && \
+	docker-compose up -d --build; docker logs --follow worker

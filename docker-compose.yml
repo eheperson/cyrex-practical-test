@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  worker:
+    container_name: worker
+    hostname: worker
+    build:
+      context: ./src
+      args:
+        REPO_PATH: ./src
+      dockerfile: Dockerfile
+    environment:
+      - "RUN=1"
+    volumes:
+      - ./reports/:/usr/src/app/reports
+    ports:
+      - "8089:8089"
+    working_dir: /app

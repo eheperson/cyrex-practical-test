@@ -9,6 +9,7 @@ Flask-Cors==3.0.10
 gevent==22.10.2
 geventhttpclient==2.0.8
 greenlet==2.0.1
+grpc-interceptor==0.15.0
 grpcio==1.51.1
 grpcio-tools==1.51.1
 idna==3.4
