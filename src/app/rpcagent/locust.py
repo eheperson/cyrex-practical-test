@@ -28,7 +28,15 @@ class LocustInterceptor(ClientInterceptor):
         response_length = 0
         try:
             response = method(request_or_iterator, call_details)
-            response_length = response.result().ByteSize()
+            try:
+                response_length = len(list(response))
+            except:
+                pass
+            try:
+                response_length = response.result().ByteSize()
+            except:
+                pass
+
         except grpc.RpcError as e:
             exception = e
 
@@ -57,13 +65,17 @@ class GrpcUser(HttpUser):
                 raise LocustError(f"You must specify the {attr_name}.")
 
         self._channel = grpc.insecure_channel(self.host)
+        self._channel_closed = False
         interceptor = LocustInterceptor(environment=environment)
         self._channel = grpc.intercept_channel(self._channel, interceptor)
-
         # self.stub = self.stub_class(self._channel)
         self.client = {
             "authClient":self.auth_service_stub_class(self._channel),
             "vacancyClient":self.vacancy_service_stub_class(self._channel),
         }
             
-            
+    def stop(self, force=False):
+        self._channel_closed = True
+        time.sleep(1)
+        self._channel.close()
+        super().stop(force=True)

@@ -1,8 +1,8 @@
 HOST = vacancies.cyrextech.net
-PORT = 7823
-PROTO_DIR = src/rpcagent/proto
-PROTO_FILE_NAMES = auth_service.proto,rpc_create_vacancy.proto,rpc_signin_user.proto,rpc_signup_user.proto,rpc_update_vacancy.proto,user_service.proto,vacancy.proto,vacancy_service.proto
 SOURCE_DIR = src
+PORT = 7823
+PROTO_DIR = ${SOURCE_DIR}/app/rpcagent/proto
+PROTO_FILE_NAMES = auth_service.proto,rpc_create_vacancy.proto,rpc_signin_user.proto,rpc_signup_user.proto,rpc_update_vacancy.proto,user_service.proto,vacancy.proto,vacancy_service.proto
 VENV_DIR = venv
 
 prepare:
@@ -48,7 +48,7 @@ clean_protos:
 	rm ${PROTO_DIR}/*_pb2.py
 
 locust_run:
-	source ${VENV_DIR}/bin/activate && locust -f ${SOURCE_DIR}/main.py --config ${SOURCE_DIR}/locust.conf
+	source ${VENV_DIR}/bin/activate && locust -f ${SOURCE_DIR}/app/main.py --config ${SOURCE_DIR}/confs/locust.conf
 
 start-docker:
 	sudo chmod +x ${SOURCE_DIR}/entrypoint.sh && \

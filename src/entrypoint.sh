@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ "$RUN" = "1" ]; then
-    locust -f ./main.py --config ./locust.docker.conf
+    locust -f ./app/main.py --config ./confs/locust.docker.conf
 fi
 
 exec "$@"

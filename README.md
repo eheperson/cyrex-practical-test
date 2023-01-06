@@ -1,14 +1,13 @@
 # cyrex-practical-test
 
-## Pre-Requirements
+## Preparetion
+
+1. Clone the repository:
 ```
-    $ make evans-cli
+    $ git@github.com:eheperson/cyrex-practical-test.git
 ```
 
-pip install locust
-pip install protebuf
-pip install grpcio grpcio-tools
-pip install python-dotenv
+
 
 
 fix for grpco build for apple slicons :

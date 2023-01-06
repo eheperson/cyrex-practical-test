@@ -7,8 +7,10 @@ services:
     build:
       context: ./src
       args:
-        REPO_PATH: ./src
+        REPO_PATH: ./src/app
       dockerfile: Dockerfile
+    env_file:
+      - src/.env
     environment:
       - "RUN=1"
     volumes:
