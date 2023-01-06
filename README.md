@@ -37,10 +37,14 @@ Python Developer Assesment for the Cyrex
 ```
 	$ sudo chmod +x ./src/entrypoint.sh
 	$ docker-compose up -d --build; docker logs --follow worker
-
-    # if you have makefile just run
-    $ make start-docker
 ```
+
+>if you have makefile, just run those commands in root directory of the project:
+>```
+>    # if you have makefile just run
+>    $ make start-docker
+>```
+>
 
 ### Local:
 >This option only tested on MacOS, 
@@ -52,11 +56,13 @@ Python Developer Assesment for the Cyrex
 	$ pip install --upgrade pip
 	$ pip install -r ./src/requirements.txt
 	$ locust -f ./src/app/main.py --config ./src/confs/locust.conf
-
-    # if you have makefile
-    $ make prepare
-    $ make locust_run
 ```
+
+>if you have makefile, just run those commands in root directory of the project:
+>```
+>    $ make prepare
+>    $ make locust_run
+>```
 
 
 # Notes
