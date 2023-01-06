@@ -1,65 +1,94 @@
-from dotenv import load_dotenv
-import os
-
+from locust import task, SequentialTaskSet, constant
+import logging
 from rpcagent.clients import AuthServiceClient, VacancyServiceClient
 from rpcagent.messages import Messages
+from rpcagent.utils import RandomText, getUser
+from rpcagent.locust import GrpcUser
 
-rootDir = os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
-dotenvPath = os.path.join(rootDir, ".env")
-load_dotenv(dotenvPath)
+vacancyId = None
+class LoginWithUsers(SequentialTaskSet):
+    wait_time = constant(30)
+    email = "NOT_FOUND"
+    password = "NOT_FOUND"
+    def on_start(self):
+            # if len(USER_CREDENTIALS) > 0:
+            self.email, self.password = getUser()
+            
+            credentials = Messages.signInUser(email=self.email, password=self.password)
+            self.client["authClient"].signInUser(credentials=credentials)
+            logging.info('Login with %s email and %s password', self.email, self.password)
+    
+    # @task
+    # def login(self):
+    #     credentials = Messages.signInUser(email=self.email, password=self.password)
+    #     self.client["authClient"].signInUser(credentials=credentials)
+    #     logging.info('Login with %s email and %s password', self.email, self.password)
+    #     time.sleep(10)
 
-user1 = {
-    "email": os.getenv("USER_1_EMAIL"),
-    "password": os.getenv("USER_1_PASSWORD")
-}
-user2 = {
-    "email": os.getenv("USER_2_EMAIL"),
-    "password": os.getenv("USER_2_PASSWORD")
-}
-user3 = {
-    "email": os.getenv("USER_3_EMAIL"),
-    "password": os.getenv("USER_3_PASSWORD")
-}
+    @task
+    class VacancyLoad(SequentialTaskSet):
+        @task
+        def create_vacancy(self):
+            createVacancyMessage = Messages.createVacancy(
+                country=RandomText.lowercase(8),
+                description=RandomText.lowercase(8),
+                division=2,
+                title=RandomText.lowercase(8)
+            )
+            global vacancyId
+            res = self.client["vacancyClient"].createVacancy(createVacancyMessage)
+            vacancyId = res.vacancy.Id
+            logging.info("Vacancy is created with { %s }", res.vacancy)
+            # self.interrupt(reschedule=False)
 
-credentials = [
-    {"email": os.getenv("USER_1_EMAIL"), "password": os.getenv("USER_1_PASSWORD")},
-    {"email": os.getenv("USER_2_EMAIL"), "password": os.getenv("USER_2_PASSWORD")},
-    {"email": os.getenv("USER_3_EMAIL"), "password": os.getenv("USER_3_PASSWORD")}
-]
+        @task
+        def update_vacancy(self):
+            global vacancyId
+            updateVacancyMessage = Messages.updateVacancy(id=vacancyId, title=RandomText.lowercase(8))
+            res = self.client["vacancyClient"].updateVacancy(updateVacancyMessage)
+            logging.info("Vacancy is updated with { %s }", res.vacancy)
+            # self.interrupt(reschedule=False)
+
+        @task
+        def fetch_vacancy(self):
+            global vacancyId
+            getVacancyMessage = Messages.getVacancy(id=vacancyId)
+            res = self.client["vacancyClient"].getVacancy(getVacancyMessage)
+            logging.info("Vacancy is fetched { %s }", res.vacancy)
+            # self.interrupt(reschedule=False)
+
+        @task
+        def delete_vacancy(self):
+            global vacancyId
+            deleteVacancyMessage = Messages.deleteVacancy(id=vacancyId)
+            res = self.client["vacancyClient"].deleteVacancy(deleteVacancyMessage)
+            logging.info("Vacancy is deleted { %s }", res.success)
+            self.interrupt(reschedule=False)
+
+class FetchVacancies(GrpcUser):
+    host = "vacancies.cyrextech.net:7823"
+    vacancy_service_stub_class=VacancyServiceClient 
+    auth_service_stub_class=AuthServiceClient
+    wait_time = constant(45)
+    weight=1
+    @task
+    def eeee(self):
+        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    # @task
+    # def fetch_vacancies(self):
+    #     getVacanciesMessage = Messages.getVacancies(page=100)
+    #     res = self.client["vacancyClient"].getVacancies(getVacanciesMessage)
+    #     logging.info("Vacancy is created zzzzzzzzzwith { %s }", res.vacancy)
+    #     self.interrupt(reschedule=False)
 
 
-from rpcagent.messages import Messages
-from rpcagent.clients import VacancyServiceClient
-
-if __name__ == '__main__':
-    # authClient = AuthServiceClient(host='vacancies.cyrextech.net', port=7823)
-    # for c in credentials:
-    #     message = Messages.signInUser(email=c["email"], password=c["password"])
-    #     result = authClient.signInUser(credentials=message)
-    #     print(f'{result}')
-
-    vacancyClient = VacancyServiceClient(host='vacancies.cyrextech.net', port=7823)
-
-    createVacancy = Messages.createVacancy(
-        country="eeee",
-        description="ererer",
-        division=2,
-        title="erfftgffddddfffee"
-    )
-    print(createVacancy)
-    created = vacancyClient.createVacancy(createVacancy)
-    print(created)
-
-    delVac = Messages.deleteVacancy(id="63b5cf4dd99d387c3d3b290b")
-    print(delVac)
-    print(vacancyClient.deleteVacancy(delVac))
-
-    getVacs = Messages.getVacancies(page=2)
-    print(getVacs)
-    print(vacancyClient.getVacancies(getVacs))
-
-    # getVac = Messages.getVacancy(id="asdasdasd")
-    # print(getVac)
-
-    # updateVac = Messages.updateVacancy(id="adasd", title="dddddd")
-    # print(updateVac)
+class LoginWithUniqueUsersTest(GrpcUser):
+    host = "vacancies.cyrextech.net:7823"
+    tasks=[LoginWithUsers]
+    weight=3
+    vacancy_service_stub_class=VacancyServiceClient 
+    auth_service_stub_class=AuthServiceClient

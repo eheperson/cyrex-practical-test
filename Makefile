@@ -50,5 +50,8 @@ generate_protos_python:
 run:
 	source ${VENV_DIR}/bin/activate && python ${SOURCE_DIR}/main.py && deactivate
 
+locust_test:
+	source ${VENV_DIR}/bin/activate && locust -f ${SOURCE_DIR}/main.py
+
 clean_protos:
 	rm ${PROTO_DIR}/*_pb2.py
